@@ -1,0 +1,31 @@
+name: Azure PowerShell Automation
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install PowerShell
+      uses: PowerShell/PowerShell@v1
+
+    - name: Install Az module
+      shell: pwsh
+      run: |
+        Install-Module Az -Force -Scope CurrentUser -AllowClobber
+
+    - name: Run PowerShell script
+      shell: pwsh
+      env:
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+      run: |
+        $creds = ConvertFrom-Json $env:AZURE_CREDENTIALS
+        Connect-AzAccount -ServicePrincipal -Tenant $creds.tenantId -Credential (New-Object System.Management.Automation.PSCredential($creds.clientId, (ConvertTo-SecureString $creds.clientSecret -AsPlainText -Force)))
+        ./Create-AzVM.ps1
