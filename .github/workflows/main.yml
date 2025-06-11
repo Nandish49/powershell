@@ -1,4 +1,4 @@
-name: Run PowerShell Script
+name: Deploy Azure VM
 
 on:
   push:
@@ -6,14 +6,16 @@ on:
       - main
 
 jobs:
-  run-powershell:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
-      - name: Run PowerShell Script
-        run: ./Create-AzVM.ps1
-        shell: pwsh
+    - name: Install PowerShell
+      run: |
+        sudo apt-get install -y powershell
+        pwsh -c "Install-Module -Name Az -Force -Scope CurrentUser"
 
+    - name: Run PowerShell Script
+      run: pwsh ./Create-AzVM.ps1
