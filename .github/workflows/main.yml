@@ -3,8 +3,8 @@ name: Azure PowerShell Automation
 on:
   push:
     branches:
-      - main  # or your default branch
-  workflow_dispatch:  # allow manual trigger from GitHub UI
+      - main
+  workflow_dispatch:
 
 jobs:
   run-powershell-script:
@@ -14,17 +14,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install PowerShell
-        uses: PowerShell/PowerShell@v1.2.0
-
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Run PowerShell Script
+      - name: Run PowerShell script
         shell: pwsh
-        run: ./Azure-powershell-automation/Create-AzVM.ps1
+        run: |
+          ./Azure-powershell-automation/Create-AzVM.ps1
+
 
 
 
