@@ -1,24 +1,31 @@
-name: Deploy Azure VM
+name: Azure PowerShell Automation
 
 on:
   push:
     branches:
-      - main
+      - main  # or your default branch
+  workflow_dispatch:  # allow manual trigger from GitHub UI
 
 jobs:
-  deploy:
+  run-powershell-script:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install PowerShell
-      run: |
-        sudo apt-get install -y powershell
-        pwsh -c "Install-Module -Name Az -Force -Scope CurrentUser"
+      - name: Install PowerShell
+        uses: PowerShell/PowerShell@v1.2.0
 
-    - name: Run PowerShell Script
-      run: pwsh ./Create-AzVM.ps1
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Run PowerShell Script
+        shell: pwsh
+        run: ./Azure-powershell-automation/Create-AzVM.ps1
+
 
 
 
